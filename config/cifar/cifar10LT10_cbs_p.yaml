@@ -1,0 +1,10 @@
+classifier:
+  name: 'Class_Balanced_Softmax'
+  args:
+    power_law: 1.6
+
+dataset:
+  name: 'cifar10'
+  args:
+    imbalance_type: 'exp'
+    imbalance_factor: 0.1

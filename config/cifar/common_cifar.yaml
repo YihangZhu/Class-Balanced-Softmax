@@ -1,0 +1,21 @@
+trainer:
+  learning_task: 'classification'
+
+dataset:
+  args:
+    total_batch_size: 128
+
+optimizer:
+  name: 'SGD'
+  args:
+    lr: 0.1
+    weight_decay: 5e-4
+    momentum: 0.9
+
+lr_scheduler:
+  name: 'multi_step'
+  args:
+    warmup: 5
+
+backbone:
+  name: 'resnet32'

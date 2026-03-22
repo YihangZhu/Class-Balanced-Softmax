@@ -1,0 +1,154 @@
+trainer:
+  name: null
+  print_freq: null
+  resume: null
+  checkpoint: null
+  mode: null  # training or validation
+  seed: 0
+  num_epochs: null
+  adjust_loss: False
+  hierarchical: null
+  fix_representation: null
+  start_epoch: null
+  classifier_rate: null # The rate for important or negligible values. It is used to measure the model preference issue in the class mean or classifier weights.
+  save_all_ckp: null
+  run_test: null
+  record_more_details: null
+  model_update: null
+  learning_task: null
+  run_epochs: null
+  args: null
+
+dataset:
+  name: null
+  args:
+    hpc: null
+    target_size: null # size of input images
+    num_workers: null
+    batch_size: null
+    total_batch_size: null
+    imbalance_factor: null
+    imbalance_type: null
+    img_max: null
+    major: null
+    minor: null
+    test_types: null
+    num_classes: null
+    preprocess: null
+    coarse_labels: null
+    coarse_label_id: null # indicating the id of the parent class and consider all the children classes of the parent class
+    distributed_sampler: null
+    modify_background: null
+    num_masks: null # total number of masks per image
+    num_prompts: null # total number of prompt for each masks
+    less_background: null
+    mask_img: null
+    object_detection: null
+    crop_square: null
+    train_sampler: null
+    aug_type: null
+    collate_fn: null
+    combine_train_test: null
+
+learning_model:
+  name: "LearningModel"
+  args:
+    # for reslt
+    after_1x1conv: null
+    #for ride
+    reduce_dimension: null
+    num_experts: null
+    use_pool: null
+    feat_dim: null
+    hidden_dim: null
+    mix_channels: null
+    use_mask: null
+    background_weight: null
+    scl_variant: null
+    class_complement: null
+    oneway_contrast: null
+    temperature: null
+    relu_head: null
+    use_scl_grad: null
+    gamma: null
+    pure_scl: null
+    beta: null
+    alpha: null
+    use_norm: null
+    multi_head_mlp: null
+
+backbone:
+  name: null
+  args:
+    input_channels: null
+    patch_size: null
+    pooling: null
+
+classifier:
+  name: 'Standard_Classifier'
+  args:
+    tau_norm: null
+    linear_bias: null
+    relu_weight: null
+    balancing_weight: null
+    tau_norm_both: null
+    cosine_similarity: null
+    encode_type: null
+    random_mean: null
+    mean_range: null
+    class_mean_file: null
+    memory_size: null
+    total_epochs: null
+    num_centroids: null
+    mean_momentum: null
+    enforced_groups: null
+    logit_grad: null
+    post_adjust: null
+    power_law: null
+    crc: null
+    cosine: null
+    logarithm: null
+
+loss:
+  name: 'CrossEntropyLoss'
+  args:
+    # for reslt
+    alpha: null
+    beta: null
+    # for ride
+    reweight_factor: null
+    reweight_epoch: null
+    additional_diversity_factor: null
+    ldam: null
+    max_m: null
+    s: null
+    drw: null
+    gamma: null
+    detach: null
+    balanced_softmax: null
+    reduction: null
+    label_smoothing: null
+
+optimizer:
+  name: null
+  args:
+    lr: null
+    weight_decay: null
+    momentum: null
+    nesterov: null
+    betas: null
+
+lr_scheduler:
+  name: null
+  args:
+    warmup: null
+    steps: null
+
+ddp:
+  world_size: 0  # the total number of GPUs available, will be updated later in the program.
+  node_rank: 0  # rank of the node (machine), will be updated later in the program
+  num_nodes: 1
+  num_gpus_per_node: [ 0 ]
+  dist_url: 'env://'
+  dist_backend: 'nccl'
+  on: False  # whether using distributed parallel package for training

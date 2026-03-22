@@ -1,0 +1,17 @@
+torch
+numpy
+torchvision
+yacs
+matplotlib
+pandas
+PCA
+ruamel.yaml
+seaborn
+pillow
+scikit-learn
+tqdm
+lvis
+pycocotools
+
+
+

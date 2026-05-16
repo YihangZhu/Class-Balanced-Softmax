@@ -1,0 +1,94 @@
+The class_prob_train is calculated using the model pre-trained on ImageNet-1K.
+
+Folder created: saved/test/2024-09-24_20-12-34_res50_imagenet_lt_0_gpus1
+trainer:
+	name: res50_imagenet_lt_0
+	print_freq: 40
+	resume: False
+	mode: test
+	seed: 0
+	num_epochs: 200
+	adjust_loss: False
+	fix_model: True
+	start_epoch: 199
+	classifier_rate: 0.1
+	test: False
+dataset:
+	name: imagenet_lt
+	args:
+		num_workers: 8
+		batch_size: 256
+		total_batch_size: 256
+		test_types: ['balanced']
+representation:
+	name: resnet50
+	args:
+classifier:
+	name: ProbabilityClassifier
+	args:
+loss:
+	name: CrossEntropyLoss
+	args:
+optimizer:
+	name: SGD
+	args:
+		lr: 0.1
+		weight_decay: 0.0005
+		momentum: 0.9
+lr_scheduler:
+	name: cosine
+	args:
+		warmup: False
+ddp:
+	world_size: 1
+	node_rank: 0
+	num_nodes: 1
+	num_gpus_per_node: [1]
+	dist_url: env://
+	dist_backend: nccl
+	on: False
+
+Node 0 has 1 GPUs
+===> using one GPU for training
+==============Learning rate scheduler==============
+init lr: 0.1
+Data prepared.
+==============Data details==============
+Total classes: 1000
+Train batch num: 452, test batch num: 196
+Train: head class samples (88693, 0.7656112425116103) med class samples (25510, 0.22020613573191997) tail class samples (1643, 0.014182621756469796)
+train total_class_num: 1000, total_data: 115846, sample_per_class: 5-1280
+test balanced total_class_num: 1000, total_data: 50000, sample_per_class: 50-50
+==============Learning model==============
+**The entire model is fixed, not trainable.
+Backbone total parameters: 0
+Backbone trainable parameters: 0
+Total parameters: 25657384
+Total trainable parameters: 0
+=> loading checkpoint 'saved/results_for_report/linear_layer/softmax/res_bias/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+=> loaded checkpoint 'saved/results_for_report/linear_layer/softmax/res_bias/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+Preparation time: 5.566
+>>===========Training started===========>>
+Train epoch[199]: [  0/452]	Batch_time 15.360 (15.360)	Data_time  8.716 ( 8.716)	Loss 0.722 (0.722)
+Train epoch[199]: [ 40/452]	Batch_time  6.372 ( 1.215)	Data_time  6.259 ( 0.941)	Loss 0.681 (0.714)
+Train epoch[199]: [ 80/452]	Batch_time  7.737 ( 1.118)	Data_time  7.623 ( 0.923)	Loss 0.709 (0.704)
+Train epoch[199]: [120/452]	Batch_time  6.433 ( 1.119)	Data_time  6.318 ( 0.951)	Loss 0.776 (0.710)
+Train epoch[199]: [160/452]	Batch_time  2.953 ( 1.064)	Data_time  2.839 ( 0.909)	Loss 0.641 (0.713)
+Train epoch[199]: [200/452]	Batch_time  3.607 ( 1.094)	Data_time  3.493 ( 0.947)	Loss 0.782 (0.713)
+Train epoch[199]: [240/452]	Batch_time  1.599 ( 1.097)	Data_time  1.485 ( 0.956)	Loss 0.690 (0.714)
+Train epoch[199]: [280/452]	Batch_time  1.460 ( 1.064)	Data_time  1.346 ( 0.926)	Loss 0.625 (0.711)
+Train epoch[199]: [320/452]	Batch_time  1.630 ( 1.038)	Data_time  1.516 ( 0.904)	Loss 0.600 (0.708)
+Train epoch[199]: [360/452]	Batch_time  0.175 ( 1.016)	Data_time  0.060 ( 0.884)	Loss 0.555 (0.707)
+Train epoch[199]: [400/452]	Batch_time  1.777 ( 0.999)	Data_time  1.663 ( 0.869)	Loss 0.717 (0.706)
+Train epoch[199]: [440/452]	Batch_time  2.616 ( 0.985)	Data_time  2.502 ( 0.856)	Loss 0.700 (0.707)
+Train epoch[199]: [recall]  acc@head: 86.34077	acc@med: 71.40185	acc@tail: 33.72544	acc@class: 72.02935	[precision]  pcs@head: 84.04298	pcs@med: 85.10084	pcs@tail: 73.98778	pcs@class: 83.18219	[f1_score]  f1@head: 85.08427	f1@med: 76.71086	f1@tail: 43.71270	f1@class: 75.44688	
+Runtime: 450.736	lr: 6.168417794200077e-06
+Eval epoch[199]: [  0/196]	Batch_time  0.017 ( 0.017)	Data_time  0.000 ( 0.000)	Loss 0.000 (0.000)
+Eval epoch[199]: [ 40/196]	Batch_time  7.806 ( 0.823)	Data_time  7.799 ( 0.767)	Loss 0.000 (0.000)
+Eval epoch[199]: [ 80/196]	Batch_time  5.728 ( 0.795)	Data_time  5.721 ( 0.742)	Loss 0.000 (0.000)
+Eval epoch[199]: [120/196]	Batch_time  7.080 ( 0.801)	Data_time  7.074 ( 0.748)	Loss 0.000 (0.000)
+Eval epoch[199]: [160/196]	Batch_time  7.177 ( 0.848)	Data_time  7.168 ( 0.795)	Loss 0.000 (0.000)
+Eval epoch[199]: [recall]  acc@head: 66.11428	acc@med: 38.28810	acc@tail: 9.02941	acc@class: 45.02200	[precision]  pcs@head: 42.95167	pcs@med: 56.23983	pcs@tail: 50.19270	pcs@class: 50.30148	[f1_score]  f1@head: 50.45999	f1@med: 42.67366	f1@tail: 13.51991	f1@class: 41.70649	
+Epoch_time: 619.231
+fc:	weight-sum mean: @head: 0.46754	@med: -0.31326	@tail: -0.22020		#dominant-feature mean: @head: 9.44416	@med: 2.45720	@tail: 0.46324		#negligible-feature mean: @head: 98.67792	@med: 38.91649	@tail: 7.33824		weight-norm mean: @head: 1.16941	@med: 0.95422	@tail: 0.71601		bias mean: @head: 0.00624	@med: -0.00333	@tail: -0.00594	
+training completed, time: 640s

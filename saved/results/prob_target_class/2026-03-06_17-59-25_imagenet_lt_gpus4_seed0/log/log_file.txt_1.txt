@@ -1,0 +1,122 @@
+Folder created: saved/train/2026-03-06_17-59-25_imagenet_lt_gpus4_seed0
+trainer:
+	name: _imagenet_lt
+	print_freq: 40
+	resume: False
+	checkpoint: saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-24_19-37-15_res50_imagenet_1k_0_gpus4/ckps/last_ckp.tar
+	mode: train
+	seed: 0
+	num_epochs: 1
+	adjust_loss: False
+	start_epoch: 0
+	classifier_rate: 0.1
+	run_test: False
+	record_more_details: ['target_prob']
+	model_update: False
+	learning_task: classification
+	run_epochs: 1
+	task_worker: classification_worker
+	final_test: 1
+	fp16: False
+dataset:
+	name: imagenet_lt
+	args:
+		hpc: sulis
+		num_workers: 8
+		batch_size: 64
+		total_batch_size: 256
+		test_types: ['balanced']
+learning_model:
+	name: LearningModel
+	args:
+backbone:
+	name: resnet50
+	args:
+classifier:
+	name: Standard_Classifier
+	args:
+loss:
+	name: CrossEntropyLoss
+	args:
+optimizer:
+	name: SGD
+	args:
+		lr: 0.1
+		weight_decay: 0.0005
+		momentum: 0.9
+lr_scheduler:
+	name: cosine
+	args:
+		warmup: False
+ddp:
+	world_size: 4
+	node_rank: 1
+	num_nodes: 2
+	num_gpus_per_node: [2, 2]
+	dist_url: tcp://10.1.34.225:15722
+	dist_backend: nccl
+	on: True
+
+Node 1 has 2 GPUs
+Ranks for all the applied GPUs: [[0, 1], [2, 3]]
+Initializing distributed package for GPU 1/4 (node 0, GPU 1/2) with tcp://10.1.34.225:15722.....
+Distributed package is initialized for GPU 1/4
+===> Distributed sampler is ready
+===> Using distributed sampler
+Data prepared.
+==============Data details==============
+Total classes: 1000
+Train batch num: 452
+test batch num: 782
+Train: head class samples (88693.0, 0.7656112425116103) med class samples (25510.0, 0.22020613573191997) tail class samples (1643.0, 0.014182621756469796)
+train total_class_num: 1000, total_data: 115846, sample_per_class: 5.0-1280.0
+test balanced total_class_num: 1000, total_data: 50000, sample_per_class: 50.0-50.0
+==============Learning model==============
+Backbone total parameters: 23508032
+Backbone trainable parameters: 23508032
+Total parameters: 25557032
+Total trainable parameters: 25557032
+=> loading checkpoint 'saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-24_19-37-15_res50_imagenet_1k_0_gpus4/ckps/last_ckp.tar'
+Error(s) in loading state_dict for DistributedDataParallel:
+	Unexpected key(s) in state_dict: "module.merge.merge_layer.0.linears". 
+=> loaded checkpoint 'saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-24_19-37-15_res50_imagenet_1k_0_gpus4/ckps/last_ckp.tar'
+Preparation time: 60.997
+>>===========Training started===========>>
+Train epoch[0]: [  0/452]	Batch_time  1.377 ( 1.377)	Data_time  0.001 ( 0.001)	Loss 0.777 (0.777)
+Train epoch[0]: [ 40/452]	Batch_time  0.096 ( 0.126)	Data_time  0.000 ( 0.000)	Loss 0.622 (0.807)
+Train epoch[0]: [ 80/452]	Batch_time  0.095 ( 0.112)	Data_time  0.000 ( 0.000)	Loss 0.470 (0.821)
+Train epoch[0]: [120/452]	Batch_time  0.094 ( 0.107)	Data_time  0.000 ( 0.000)	Loss 0.781 (0.815)
+Train epoch[0]: [160/452]	Batch_time  0.095 ( 0.104)	Data_time  0.000 ( 0.000)	Loss 1.048 (0.822)
+Train epoch[0]: [200/452]	Batch_time  0.092 ( 0.102)	Data_time  0.000 ( 0.000)	Loss 1.019 (0.818)
+Train epoch[0]: [240/452]	Batch_time  0.095 ( 0.100)	Data_time  0.000 ( 0.000)	Loss 0.695 (0.819)
+Train epoch[0]: [280/452]	Batch_time  0.093 ( 0.100)	Data_time  0.000 ( 0.000)	Loss 0.824 (0.816)
+Train epoch[0]: [320/452]	Batch_time  0.098 ( 0.099)	Data_time  0.000 ( 0.000)	Loss 0.857 (0.811)
+Train epoch[0]: [360/452]	Batch_time  0.094 ( 0.099)	Data_time  0.000 ( 0.000)	Loss 0.712 (0.812)
+Train epoch[0]: [400/452]	Batch_time  0.094 ( 0.098)	Data_time  0.000 ( 0.000)	Loss 0.947 (0.823)
+Train epoch[0]: [440/452]	Batch_time  0.093 ( 0.098)	Data_time  0.000 ( 0.000)	Loss 0.507 (0.818)
+Train epoch[0]: [recall]  acc@head: 80.64120	acc@med: 79.53729	acc@tail: 79.63168	acc@class: 79.97514	acc@sd: 10.99078	[precision]  pcs@head: 86.83938	pcs@med: 64.15633	pcs@tail: 32.01805	pcs@class: 68.51850	pcs@sd: 22.57045	[f1_score]  f1@head: 83.39565	f1@med: 70.08686	f1@tail: 44.24747	f1@class: 71.69658	f1@sd: 17.54075	
+Runtime: 105.264	lr: None
+Epoch_time: 44.267
+Eval epoch[0]: [  0/782]	Batch_time  0.017 ( 0.017)	Data_time  0.000 ( 0.000)	Loss 0.000 (0.000)
+Eval epoch[0]: [ 40/782]	Batch_time  0.207 ( 0.046)	Data_time  0.201 ( 0.035)	Loss 0.000 (0.000)
+Eval epoch[0]: [ 80/782]	Batch_time  0.037 ( 0.051)	Data_time  0.030 ( 0.042)	Loss 0.000 (0.000)
+Eval epoch[0]: [120/782]	Batch_time  0.077 ( 0.053)	Data_time  0.070 ( 0.045)	Loss 0.000 (0.000)
+Eval epoch[0]: [160/782]	Batch_time  0.065 ( 0.053)	Data_time  0.060 ( 0.046)	Loss 0.000 (0.000)
+Eval epoch[0]: [200/782]	Batch_time  0.006 ( 0.053)	Data_time  0.000 ( 0.046)	Loss 0.000 (0.000)
+Eval epoch[0]: [240/782]	Batch_time  0.008 ( 0.056)	Data_time  0.000 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [280/782]	Batch_time  0.007 ( 0.056)	Data_time  0.000 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [320/782]	Batch_time  0.053 ( 0.056)	Data_time  0.046 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [360/782]	Batch_time  0.054 ( 0.056)	Data_time  0.047 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [400/782]	Batch_time  0.006 ( 0.056)	Data_time  0.000 ( 0.047)	Loss 0.000 (0.000)
+Eval epoch[0]: [440/782]	Batch_time  0.056 ( 0.056)	Data_time  0.049 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [480/782]	Batch_time  0.148 ( 0.056)	Data_time  0.141 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [520/782]	Batch_time  0.349 ( 0.056)	Data_time  0.341 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [560/782]	Batch_time  0.381 ( 0.056)	Data_time  0.375 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [600/782]	Batch_time  0.326 ( 0.056)	Data_time  0.319 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [640/782]	Batch_time  0.322 ( 0.056)	Data_time  0.315 ( 0.048)	Loss 0.000 (0.000)
+Eval epoch[0]: [680/782]	Batch_time  0.401 ( 0.056)	Data_time  0.393 ( 0.047)	Loss 0.000 (0.000)
+Eval epoch[0]: [720/782]	Batch_time  0.341 ( 0.056)	Data_time  0.334 ( 0.047)	Loss 0.000 (0.000)
+Eval epoch[0]: [760/782]	Batch_time  0.350 ( 0.056)	Data_time  0.344 ( 0.047)	Loss 0.000 (0.000)
+Eval epoch[0]: [recall]  acc@head: 77.76104	acc@med: 77.25679	acc@tail: 76.60294	acc@class: 77.36201	acc@sd: 15.63462	[precision]  pcs@head: 78.72002	pcs@med: 77.01331	pcs@tail: 77.30064	pcs@class: 77.70947	pcs@sd: 13.70795	[f1_score]  f1@head: 77.85249	f1@med: 76.75558	f1@tail: 76.48322	f1@class: 77.14085	f1@sd: 14.04688	
+Runtime: 149.135	
+Completed, time: 149s

@@ -1,0 +1,134 @@
+Folder created: saved/train/2026-03-06_18-06-30_imagenet_lt_gpus4_seed0
+trainer:
+	name: _imagenet_lt
+	print_freq: 40
+	resume: False
+	checkpoint: /home/y/yz681/code/ic/saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar
+	mode: train
+	seed: 0
+	num_epochs: 1
+	adjust_loss: False
+	start_epoch: 0
+	classifier_rate: 0.1
+	run_test: False
+	record_more_details: ['target_prob']
+	model_update: False
+	learning_task: classification
+	run_epochs: 1
+	task_worker: classification_worker
+	final_test: 1
+	fp16: False
+dataset:
+	name: imagenet_lt
+	args:
+		hpc: sulis
+		num_workers: 8
+		batch_size: 64
+		total_batch_size: 256
+		test_types: ['balanced']
+learning_model:
+	name: LearningModel
+	args:
+backbone:
+	name: resnet50
+	args:
+classifier:
+	name: Standard_Classifier
+	args:
+loss:
+	name: CrossEntropyLoss
+	args:
+optimizer:
+	name: SGD
+	args:
+		lr: 0.1
+		weight_decay: 0.0005
+		momentum: 0.9
+lr_scheduler:
+	name: cosine
+	args:
+		warmup: False
+ddp:
+	world_size: 4
+	node_rank: 0
+	num_nodes: 2
+	num_gpus_per_node: [2, 2]
+	dist_url: tcp://10.1.34.225:15728
+	dist_backend: nccl
+	on: True
+
+Node 0 has 2 GPUs
+Ranks for all the applied GPUs: [[0, 1], [2, 3]]
+Initializing distributed package for GPU 0/4 (node 0, GPU 0/2) with tcp://10.1.34.225:15728.....
+Distributed package is initialized for GPU 0/4
+===> Distributed sampler is ready
+===> Using distributed sampler
+Data prepared.
+==============Data details==============
+Total classes: 1000
+Train batch num: 452
+test batch num: 782
+Train: head class samples (88693.0, 0.7656112425116103) med class samples (25510.0, 0.22020613573191997) tail class samples (1643.0, 0.014182621756469796)
+train total_class_num: 1000, total_data: 115846, sample_per_class: 5.0-1280.0
+test balanced total_class_num: 1000, total_data: 50000, sample_per_class: 50.0-50.0
+==============Learning model==============
+Backbone total parameters: 23508032
+Backbone trainable parameters: 23508032
+Total parameters: 25557032
+Total trainable parameters: 25557032
+=> loading checkpoint '/home/y/yz681/code/ic/saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+Error(s) in loading state_dict for DistributedDataParallel:
+	Unexpected key(s) in state_dict: "module.merge.merge_layer.0.linears". 
+=> loaded checkpoint '/home/y/yz681/code/ic/saved/results_for_report/linear_layer/softmax/res_bias/result/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+Preparation time: 67.170
+>>===========Training started===========>>
+Train epoch[0]: [  0/452]	Batch_time  0.470 ( 0.470)	Data_time  0.001 ( 0.001)	Loss 0.849 (0.849)
+Train epoch[0]: [ 40/452]	Batch_time  0.094 ( 0.113)	Data_time  0.000 ( 0.000)	Loss 0.621 (0.768)
+Train epoch[0]: [ 80/452]	Batch_time  0.095 ( 0.106)	Data_time  0.000 ( 0.000)	Loss 0.648 (0.780)
+Train epoch[0]: [120/452]	Batch_time  0.094 ( 0.102)	Data_time  0.000 ( 0.000)	Loss 0.503 (0.790)
+Train epoch[0]: [160/452]	Batch_time  0.092 ( 0.100)	Data_time  0.000 ( 0.000)	Loss 0.923 (0.794)
+Train epoch[0]: [200/452]	Batch_time  0.094 ( 0.099)	Data_time  0.000 ( 0.000)	Loss 0.745 (0.795)
+Train epoch[0]: [240/452]	Batch_time  0.096 ( 0.098)	Data_time  0.000 ( 0.000)	Loss 0.784 (0.794)
+Train epoch[0]: [280/452]	Batch_time  0.093 ( 0.098)	Data_time  0.000 ( 0.000)	Loss 0.795 (0.790)
+Train epoch[0]: [320/452]	Batch_time  0.094 ( 0.097)	Data_time  0.000 ( 0.000)	Loss 0.982 (0.792)
+Train epoch[0]: [360/452]	Batch_time  0.095 ( 0.097)	Data_time  0.000 ( 0.000)	Loss 1.045 (0.788)
+Train epoch[0]: [400/452]	Batch_time  0.094 ( 0.097)	Data_time  0.000 ( 0.000)	Loss 0.747 (0.785)
+Train epoch[0]: [440/452]	Batch_time  0.097 ( 0.097)	Data_time  0.000 ( 0.000)	Loss 0.703 (0.788)
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Results are reduced across GPUs
+Train epoch[0]: [recall]  acc@head: 84.66142	acc@med: 68.47030	acc@tail: 32.51361	acc@class: 69.81377	acc@sd: 22.32899	[precision]  pcs@head: 82.26666	pcs@med: 83.54066	pcs@tail: 73.12105	pcs@class: 81.63310	pcs@sd: 16.56548	[f1_score]  f1@head: 83.34425	f1@med: 74.20096	f1@tail: 41.90530	f1@class: 73.32891	f1@sd: 19.38115	
+Runtime: 110.967	lr: None
+Epoch_time: 43.797
+Eval epoch[0]: [  0/782]	Batch_time  0.011 ( 0.011)	Data_time  0.000 ( 0.000)	Loss 0.000 (0.000)
+Eval epoch[0]: [ 40/782]	Batch_time  0.007 ( 0.032)	Data_time  0.000 ( 0.021)	Loss 0.000 (0.000)
+Eval epoch[0]: [ 80/782]	Batch_time  0.007 ( 0.037)	Data_time  0.000 ( 0.026)	Loss 0.000 (0.000)
+Eval epoch[0]: [120/782]	Batch_time  0.008 ( 0.037)	Data_time  0.000 ( 0.026)	Loss 0.000 (0.000)
+Eval epoch[0]: [160/782]	Batch_time  0.007 ( 0.038)	Data_time  0.000 ( 0.028)	Loss 0.000 (0.000)
+Eval epoch[0]: [200/782]	Batch_time  0.008 ( 0.038)	Data_time  0.000 ( 0.028)	Loss 0.000 (0.000)
+Eval epoch[0]: [240/782]	Batch_time  0.006 ( 0.039)	Data_time  0.000 ( 0.029)	Loss 0.000 (0.000)
+Eval epoch[0]: [280/782]	Batch_time  0.213 ( 0.040)	Data_time  0.206 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [320/782]	Batch_time  0.227 ( 0.040)	Data_time  0.220 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [360/782]	Batch_time  0.215 ( 0.040)	Data_time  0.208 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [400/782]	Batch_time  0.112 ( 0.040)	Data_time  0.105 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [440/782]	Batch_time  0.015 ( 0.040)	Data_time  0.000 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [480/782]	Batch_time  0.024 ( 0.040)	Data_time  0.000 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [520/782]	Batch_time  0.089 ( 0.040)	Data_time  0.082 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [560/782]	Batch_time  0.099 ( 0.040)	Data_time  0.092 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [600/782]	Batch_time  0.088 ( 0.040)	Data_time  0.080 ( 0.030)	Loss 0.000 (0.000)
+Eval epoch[0]: [640/782]	Batch_time  0.045 ( 0.040)	Data_time  0.037 ( 0.031)	Loss 0.000 (0.000)
+Eval epoch[0]: [680/782]	Batch_time  0.126 ( 0.040)	Data_time  0.120 ( 0.031)	Loss 0.000 (0.000)
+Eval epoch[0]: [720/782]	Batch_time  0.157 ( 0.040)	Data_time  0.151 ( 0.031)	Loss 0.000 (0.000)
+Eval epoch[0]: [760/782]	Batch_time  0.102 ( 0.040)	Data_time  0.095 ( 0.031)	Loss 0.000 (0.000)
+Eval epoch[0]: [recall]  acc@head: 66.06234	acc@med: 38.43842	acc@tail: 9.04412	acc@class: 45.07600	acc@sd: 28.09839	[precision]  pcs@head: 43.06324	pcs@med: 56.01026	pcs@tail: 47.17238	pcs@class: 49.82371	pcs@sd: 24.85146	[f1_score]  f1@head: 50.52807	f1@med: 42.67002	f1@tail: 13.52874	f1@class: 41.73216	f1@sd: 22.59925	
+Runtime: 142.071	
+Completed, time: 142s

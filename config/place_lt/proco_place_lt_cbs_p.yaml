@@ -1,0 +1,14 @@
+dataset:
+  args:
+    aug_type: "scl_randcls_1_sim_2" # due to the type of the GPU available in the HPC, the limited memory of these GPU, this the largest batch size we can use for each GPU.
+
+learning_model:
+  name: 'proco_model'
+
+classifier:
+  name: 'Class_Balanced_Softmax'
+  args:
+    power_law: 1.3
+
+trainer:
+  num_epochs: 90

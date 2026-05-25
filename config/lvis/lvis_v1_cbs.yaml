@@ -1,0 +1,13 @@
+trainer:
+  learning_task: 'classification'
+
+classifier:
+  name: 'Class_Balanced_Softmax'
+  args:
+    power_law: 1.5
+
+#trainer:
+#  #  checkpoint: "saved/results_for_report/linear_layer/softmax/res_no_bias/2023-07-26_13-34-06_res50_imagenet_1k_1_gpus4/ckps/last_ckp.tar"
+#  checkpoint: "saved/results_for_report/imagenet-1k/2023-07-26_13-34-06_res50_imagenet_1k_1_gpus4/ckps/last_ckp.tar"
+#  num_epochs: 20
+

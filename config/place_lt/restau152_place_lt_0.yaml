@@ -1,0 +1,14 @@
+trainer:
+  checkpoint: 'saved/results_for_report/2024-08-02_21-03-10_res152_place_lt_0_gpus4/ckps/last_ckp.tar'
+  mode: 'validate'  # training or validation
+
+representation:
+  name: 'resnet152'
+
+classifier:
+  name: 'Post_Adjust'
+  args:
+    post_adjust: 'tau_norm'
+    linear_bias: True
+    tau_norm: 0.8
+

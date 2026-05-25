@@ -1,0 +1,33 @@
+trainer:
+  num_epochs: 28
+  checkpoint: 'saved/path-to-res-results/2023-07-24_19-37-15_res50_imagenet_1k_0_gpus4/ckps/last_ckp.tar'
+#  checkpoint: 'saved/results_for_report/imagenet-1k/2023-07-26_13-34-06_res50_imagenet_1k_1_gpus4/ckps/last_ckp.tar'
+
+# dataset & model setting
+dataset:
+  name: 'lvis_v1'
+  args:
+    total_batch_size: 256 # due to the type of the GPU available in the HPC, the limited memory of these GPU, this the largest batch size we can use for each GPU.
+    target_size: 224
+    mask_img: False
+    less_background: True
+    crop_square: True
+
+# Train
+lr_scheduler:
+  name: 'cosine'
+  args:
+    warmup: False
+
+optimizer:
+  name: 'SGD'
+  args:
+    lr: 0.1
+    weight_decay: 1e-4
+    momentum: 0.9
+
+backbone:
+  name: 'resnet50'
+  args:
+    input_channels: 3
+

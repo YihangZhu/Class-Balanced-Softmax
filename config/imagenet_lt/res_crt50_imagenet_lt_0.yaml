@@ -1,0 +1,12 @@
+backbone:
+  name: 'resnet50'
+
+trainer:
+  checkpoint: 'saved/results_for_report/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+  num_epochs: 10
+  fix_representation: True
+  start_epoch: 0
+
+dataset:
+  args:
+    train_sampler: 'class_balanced-fix'

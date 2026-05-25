@@ -61,21 +61,22 @@ class Standard_Classifier(nn.Module):
 
 
 class Post_Adjust(Standard_Classifier):
-    def __init__(self, post_adjust=None, **kwargs):
+    def __init__(self, post_adjust=None, tau_norm=None, **kwargs):
         super(Post_Adjust, self).__init__(**kwargs)
         self.adjust_func = getattr(self, post_adjust)
+        self.power = tau_norm
 
     def _inference(self, output):
         return self.adjust_func(output)
 
     def tau_norm(self, output):
-        weight = normalize(self.fc.weight.detach(), power=self.tau_norm)
+        weight = normalize(self.fc.weight.detach(), power=self.power)
         output['similarities'] = torch.mm(output['feature'], torch.t(weight))
         return output
 
     def tau_norm_both(self, output):
-        feature_normalized = normalize(output['feature'].detach(), power=self.tau_norm_both)
-        weight_normalized = normalize(self.fc.weight.detach(), power=self.tau_norm_both)
+        feature_normalized = normalize(output['feature'].detach(), power=self.power)
+        weight_normalized = normalize(self.fc.weight.detach(), power=self.power)
         output['similarities'] = torch.mm(feature_normalized, torch.t(weight_normalized))
         return output
 

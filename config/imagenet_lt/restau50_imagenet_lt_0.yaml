@@ -1,0 +1,13 @@
+trainer:
+  checkpoint: 'saved/path-to-res-results/2023-07-22_17-41-33_res50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+  mode: 'validate'  # training or validation
+
+backbone:
+  name: 'resnet50'
+
+classifier:
+  name: 'Post_Adjust'
+  args:
+    post_adjust: 'tau_norm'
+    tau_norm: 0.7
+

@@ -1,0 +1,29 @@
+trainer:
+  learning_task: 'classification'
+
+backbone:
+  name: 'resnet50'
+
+# dataset & model setting
+dataset:
+  name: 'imagenet_lt'
+  args:
+    total_batch_size: 256 # due to the type of the GPU available in the HPC, the limited memory of these GPU, this the largest batch size we can use for each GPU.
+    test_types:
+      - 'balanced'
+# Train
+lr_scheduler:
+  name: 'cosine'
+  args:
+    warmup: False
+
+optimizer:
+  name: 'SGD'
+  args:
+    lr: 0.1
+    weight_decay: 5e-4
+    momentum: 0.9
+
+
+
+

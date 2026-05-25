@@ -1,0 +1,21 @@
+#trainer:
+#  checkpoint: 'saved/results_for_report/2024-08-02_21-22-30_reslt50_imagenet_lt_0_gpus4/ckps/last_ckp.tar'
+#  mode: 'validate'  # training or validation
+
+backbone:
+  name: 'reslt50'
+
+learning_model:
+  args:
+    after_1x1conv: True
+
+classifier:
+  name: 'Post_Adjust'
+  args:
+    tau_norm: 0.7
+
+loss:
+  name: 'ResltLoss'
+  args:
+    beta: 0.99
+

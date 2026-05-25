@@ -1,0 +1,68 @@
+#!/bin/bash
+nodes=1     # the total number of nodes you request
+gpus=1      # the number of GPUs per node you request
+world_size=$((nodes*gpus)) # the total number of GPUs you will need
+mode='--mode train'
+resume="--resume 0"
+checkpoint="--checkpoint None"
+model_update="--model_update 1"
+start_epoch="--start_epoch 0"
+run_epochs="--run_epochs None"
+num_epoches="--num_epochs 200"
+record_detail="--record_more_details \"[]\""
+run_checkpoint="--test_checkpoint 0"
+run_test="--run_test 0"
+
+cfg_files=(
+ "[\'config/cifar/cifar10LT10_cbs_p.yaml\']"
+)
+name=0
+for ck in '' ; do
+  for s in 0 ; do
+    seed="--seed ${s}"
+    for setup in ${cfg_files[*]} ; do
+      cfg_file="--cfg ${setup} "
+      NOW=`date '+%F_%H-%M-%S'`
+      echo "#!/bin/bash" > script.slurm
+      echo "#SBATCH --job-name=${name}" >>script.slurm # the name of your job
+      echo "#SBATCH --output=${name}.err" >>script.slurm           # a file for recording the print out of your experiment
+      echo "#SBATCH --nodes=${nodes} " >>script.slurm              # request n nodes
+      echo "#SBATCH --gres=gpu:${gpus}" >>script.slurm # maximum 3 GPUs per node.
+      echo "#SBATCH --ntasks-per-node=1" >>script.slurm            # total number of times running main.py
+      echo "#SBATCH --time=24:00:00" >>script.slurm # maximum 48 hours of consecutive running
+      echo "#SBATCH --cpus-per-task=18" >>script.slurm             # each GPU contain 128 cpus (workers), each GPU is a task.
+      echo "#SBATCH --mem=115G" >>script.slurm             # required memory per gpu
+      echo "source ~/prepare.sh" >>script.slurm    # prepare.sh includes the code for loading modules and activate python environment.
+      echo "cd ~/ic/" >>script.slurm
+
+#      echo "export SLURM_MESSAGE_TIMEOUT=60"
+#      echo "export SLURM_NETWORK_BLOCK_TIME=60"
+#      echo "export NCCL_DEBUG=INFO"
+
+      echo "port=\$(expr 10000 + \$(echo -n \$SLURM_JOBID | tail -c 4))" >>script.slurm # get a free port for running distributed training
+
+      #echo $MASTER_PORT
+      #### get the first node name as master address - customized for vgg slurm
+      #### e.g. master(gnodee[2-5],gnoded1) == gnodee2
+      #echo "NODELIST="${SLURM_NODELIST}
+      #master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
+      #export MASTER_ADDR=$master_addr
+      #echo "MASTER_ADDR="$MASTER_ADDR
+      # https://github.com/NVlabs/stylegan2-ada-pytorch/issues/190
+      #pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio===0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+      #pip install -r requirements.txt
+      echo "ip1=\`hostname -I | awk '{print \$1}'\`" >>script.slurm # get the ip address for running distributed training
+
+      echo "echo \$ip1" >>script.slurm
+      echo "echo '$NOW'" >>script.slurm
+  #    echo "pip install -r requirements.txt" >>script.slurm
+      # srun will run main.py in each node independently, each is associated with a unique number os.environ['SLURM_PROCID'],
+      # which can be read in python, used as node rank. --tunings dataset-args-one_vs_all-${param[${num}]} --checkpoint ${checkpoint[1]} --opt classifier@args@cosine@${opt}&
+      echo "srun python ddp_main.py ${cfg_file} --nodes ${nodes} --gpus ${gpus} --world_size ${world_size} --ip \$ip1 --port \$port --wks 8 ${mode} --time '$NOW' ${seed} ${resume} ${model_update} ${start_epoch} ${record_detail} ${run_epochs} ${checkpoint} ${num_epoches} ${run_checkpoint} "  >>script.slurm
+      cat script.slurm
+      sbatch script.slurm
+      rm script.slurm
+      name="$((name+1))"
+    done
+  done
+done

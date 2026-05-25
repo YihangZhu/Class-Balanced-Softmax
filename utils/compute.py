@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import torchvision.transforms
 from torchvision import transforms
 
-from utils.meter import get_dominated_count
+from utils.randaugment import rand_augment_transform
 from utils.utils import check_file, check_identical
 
 
@@ -134,199 +134,6 @@ def get_features(dataloader=None, learning_model=None, device=None, config=None,
 
     return features, targets
 
-
-def check_common_features(dataset, learning_model, logger,
-                          features=None, targets=None, num_per_cls=None, display=False,
-                          ddp_on=False, gpu_rank=0):
-    node = gpu_rank if display else 1
-    if ddp_on:
-        weights = learning_model.module.fc.weight.data
-    else:
-        weights = learning_model.fc.weight.data
-    features = np.vstack(features)
-    logger.info(f"feature shape: {features.shape}", gpu_rank)
-    feature_size = features.shape[1]
-    targets = np.hstack(targets)
-    bin_num = 2
-    dominant_class = np.ones((feature_size, bin_num), dtype=int) * (-1)
-    dominant_class_percentage = np.ones((feature_size, bin_num), dtype=int) * (-1)
-    dominant_class_bin_ratio = np.ones((feature_size, bin_num), dtype=int) * (-1)
-    max_weight_class = np.ones(feature_size, dtype=int) * (-1)
-    num_diff = 0
-    num_same = 0
-    max_weight_idx_num = np.ones(feature_size, dtype=int) * (-1)
-    max_weight_idx_percentage = np.ones(feature_size, dtype=int) * (-1)
-    max_weight_idx_ratio = np.ones(feature_size, dtype=int) * (-1)
-
-    for feature_id in range(0, feature_size):
-        # plot_feature_hist(weights[:, feature_id])
-        logger.info(f"======Feature {feature_id}==================", node)
-
-        weight_feature_i = weights[:, feature_id].detach().cpu().numpy()
-        max_weight_class[feature_id] = np.argmax(weight_feature_i)
-        logger.info(f"objects per class: {num_per_cls}", node)
-        logger.info(f"weights ({weight_feature_i})", node)
-        feature_i = features[:, feature_id]
-        feature_min = min(feature_i)
-        feature_max = max(feature_i)
-        bin_width = 1e-6 + (feature_max - feature_min) / bin_num
-        sorted_ids = np.argsort(feature_i)
-
-        ub = bin_width + feature_min
-        bin_id = 0
-
-        feature_bins = [dict()]
-
-        for i in sorted_ids:
-            while True:
-                if feature_i[i] <= ub:
-                    if targets[i] not in feature_bins[bin_id]:
-                        feature_bins[bin_id][targets[i]] = []
-                    feature_bins[bin_id][targets[i]].append(feature_i[i])
-                    break
-                else:
-                    if len(feature_bins[bin_id]) > 0:
-                        _process_bin(bin_id, feature_bins, feature_id, dominant_class, dominant_class_percentage,
-                                     dominant_class_bin_ratio,
-                                     num_per_cls, None, logger, node)
-                    feature_bins.append(dict())
-
-                    bin_id += 1
-                    ub = bin_width * (bin_id + 1) + feature_min
-        assert bin_id == 1
-        num_target_feature = dict()
-        for t in feature_bins[0]:
-            num_target_feature[t] = len(feature_bins[0][t])
-        for t in feature_bins[1]:
-            if t in num_target_feature:
-                num_target_feature[t] += len(feature_bins[1][t])
-            else:
-                num_target_feature[t] = len(feature_bins[1][t])
-        _process_bin(bin_id, feature_bins, feature_id, dominant_class, dominant_class_percentage,
-                     dominant_class_bin_ratio,
-                     num_per_cls, num_target_feature, logger, node)
-        # logger.info(f"max-weight-class: {max_weight_class[feature_id]}")
-
-        try:
-            sorted_classes = sorted(feature_bins[bin_id].keys(), key=lambda t: len(feature_bins[bin_id][t]),
-                                    reverse=True)
-            max_weight_idx_num[feature_id] = sorted_classes.index(max_weight_class[feature_id])
-        except ValueError:
-            max_weight_idx_num[feature_id] = -1
-
-        try:
-            sorted_classes = sorted(feature_bins[bin_id].keys(), key=lambda t:
-            (1.0 * len(feature_bins[bin_id][t])) / num_per_cls[t], reverse=True)
-            max_weight_idx_percentage[feature_id] = sorted_classes.index(max_weight_class[feature_id])
-        except ValueError:
-            max_weight_idx_percentage[feature_id] = -1
-
-        try:
-            sorted_classes = sorted(feature_bins[bin_id].keys(), key=lambda t:
-            (1.0 * len(feature_bins[bin_id][t])) / (num_target_feature[t]), reverse=True)
-            max_weight_idx_ratio[feature_id] = sorted_classes.index(max_weight_class[feature_id])
-        except ValueError:
-            max_weight_idx_ratio[feature_id] = -1
-
-        if dominant_class[feature_id, 1] != dominant_class_percentage[feature_id, 1]:
-            # logger.info("Dominant classes are different.")
-            num_diff += 1
-        else:
-            num_same += 1
-    # logger.info(f"dominant class regarding number: {dominant_class}")
-    # logger.info(f"dominant class regarding percentage: {dominant_class_percentage}")
-    # plot_feature_hist(feature_i, bins=np.arange(feature_min, feature_max+bin_width, bin_width))
-    logger.info("==========Summary=============", gpu_rank)
-    logger.info(f"max_weight_idx_based_sorted_num: {max_weight_idx_num}", gpu_rank)
-    logger.info(Counter(max_weight_idx_num), gpu_rank)
-    logger.info(f"max_weight_idx_based_sorted_percentage: {max_weight_idx_percentage}", gpu_rank)
-    logger.info(Counter(max_weight_idx_percentage), gpu_rank)
-    logger.info(f"max_weight_idx_based_sorted_ratio: {max_weight_idx_ratio}", gpu_rank)
-    logger.info(Counter(max_weight_idx_ratio), gpu_rank)
-    for b in range(1, bin_num):
-        logger.info(f"Bin {b}", gpu_rank)
-        logger.info(f"dominant regarding feature num: {dominant_class[:, b]}", gpu_rank)
-        stat_num = Counter(dominant_class[:, b])
-        logger.info(stat_num, node)
-        logger.info(f"dominant regarding feature percentage: {dominant_class_percentage[:, b]}", gpu_rank)
-        stat_percentage = Counter(dominant_class_percentage[:, b])
-        logger.info(stat_percentage, node)
-
-        logger.info(f"dominant regarding feature ratio: {dominant_class_bin_ratio[:, b]}", gpu_rank)
-        stat_ratio = Counter(dominant_class_bin_ratio[:, b])
-        logger.info(stat_ratio, node)
-
-        report = get_dominated_count(stat_num, dataset)
-        logger.info(f"mean_num_of_dominant_feature_num: {report}", gpu_rank)
-
-        report = get_dominated_count(stat_percentage, dataset)
-        logger.info(f"mean_num_of_dominant_feature_percentage: {report}", gpu_rank)
-
-        report = get_dominated_count(stat_ratio, dataset)
-        logger.info(f"mean_num_of_dominant_feature_ratio: {report}", gpu_rank)
-
-        max_weight_class_count = Counter(max_weight_class)
-        report = get_dominated_count(max_weight_class_count, dataset)
-        logger.info(f"mean_num_of_dominant_weight: {report}", gpu_rank)
-
-    # logger.info(f"max_num!=max_percentage: {num_diff}, max_num=max_percentage: {num_same}", gpu_rank)
-
-
-def _process_bin(bin_id, feature_bins, feature_id, dominant_class, dominant_class_percentage, dominant_class_bin_ratio,
-                 num_per_cls, num_target_feature, logger,
-                 node):
-    values = list(feature_bins[bin_id].values())
-    all_values = np.hstack(values)
-    info = f"bin {bin_id}: max ({max(all_values)}) min ({min(all_values)}) num_objects"
-    for t in feature_bins[bin_id].keys():
-        info += f" [{t}: {len(feature_bins[bin_id][t])}]"
-    info += " num_obj_%"
-    for t in feature_bins[bin_id].keys():
-        info += f" [{t}: {(1.0 * len(feature_bins[bin_id][t])) / num_per_cls[t]:.5f}]"
-
-    logger.info(info, node)
-    dominant_class[feature_id, bin_id] = max(
-        feature_bins[bin_id].keys(),
-        key=lambda target: len(feature_bins[bin_id][target]))
-    dominant_class_percentage[feature_id, bin_id] = max(
-        feature_bins[bin_id].keys(),
-        key=lambda target: (1.0 * len(feature_bins[bin_id][target])) / num_per_cls[target]
-    )
-    if num_target_feature is not None:
-        dominant_class_bin_ratio[feature_id, bin_id] = max(
-            feature_bins[bin_id].keys(),
-            key=lambda target:
-            (1.0 * len(feature_bins[bin_id][target])) / (num_target_feature[target])
-        )
-
-    logger.info(f"dominant-class: {dominant_class[feature_id, bin_id]}, "
-                f"dominant-class-percentage: {dominant_class_percentage[feature_id, bin_id]}, "
-                f"dominant-class-ratio: {dominant_class_bin_ratio[feature_id, bin_id]}, ", node)
-
-
-def _classify_one_sample(x_per, transform, device, learning_model):
-    if isinstance(transform, torchvision.transforms.Compose):
-        if len(transform.transforms) > 2:
-            simply_transform = transform.transforms[0]
-            input_image = simply_transform(x_per)
-            rest_transforms = transform.transforms[1:]
-        else:
-            rest_transforms = transform.transforms
-            input_image = x_per
-        X = input_image
-        for transform in rest_transforms:
-            X = transform(X)
-    else:
-        input_image = None
-        X = x_per
-
-    X = X.unsqueeze(0)
-    X = X.to(device)
-
-    output = learning_model(X)
-    return output, input_image
-
-
 def get_all_modules(module, module_list):
     children = list(module.children())
     if len(children):
@@ -411,3 +218,42 @@ def ce_grad_func(ce_logits: torch.Tensor, ce_targets: torch.Tensor, num_classes:
     if check:
         check_identical(logit_grad, ce_logits.grad, "Logit ")
     return logit_grad, details
+
+
+def augmentation_randncls_func(size, ra_params, normalize, randaug_n=2, randaug_m=10):
+    return [
+        transforms.RandomResizedCrop(size, scale=(0.08, 1.)),
+        transforms.RandomHorizontalFlip(),
+        rand_augment_transform('rand-n{}-m{}-mstd0.5'.format(randaug_n, randaug_m), ra_params),
+        transforms.ToTensor(),
+        transforms.RandomApply([
+            transforms.ColorJitter(0.4, 0.4, 0.4, 0.0)
+        ], p=1.0),
+        normalize,
+    ]
+
+
+def augmentation_randnclsstack_func(size, ra_params, normalize, randaug_n=2, randaug_m=10):
+    return [
+        transforms.RandomResizedCrop(size),
+        transforms.RandomHorizontalFlip(),
+        transforms.RandomGrayscale(p=0.2),
+        rand_augment_transform('rand-n{}-m{}-mstd0.5'.format(randaug_n, randaug_m), ra_params),
+        transforms.ToTensor(),
+        transforms.RandomApply([
+            transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
+        ], p=0.8),
+        normalize,
+    ]
+
+
+def augmentation_sim_func(size, normalize):
+    return [transforms.RandomResizedCrop(size),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.ToTensor(),
+            transforms.RandomApply([
+                transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)  # not strengthened
+            ], p=0.8),
+            normalize
+            ]

@@ -1,5 +1,4 @@
 # Class-Balanced Softmax (CBS)
-
 This repository contains the implementation and data for Class-Balanced Softmax (CBS).
 
 ## 📊 Data Preparation

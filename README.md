@@ -17,7 +17,7 @@ This repository contains the implementation and data for Class-Balanced Softmax 
 
 ## ⚙️ Environment & Setup
 
-Before running the scripts, prepare your Python environment. You can refer to this [Python Venv Training Tutorial](https://sites.google.com/view/zhuyihang/ml-training-tutorial/train-on-the-hpcs/python-venv?authuser=0) for detailed guidance on setting up virtual environments on HPCS.
+Before running the scripts, prepare your Python environment. You can refer to this [Python Venv Training Tutorial](https://yihangzhu.github.io/yh-site/ml-training-tutorial/train-on-the-hpcs/python-venv/) for detailed guidance on setting up virtual environments on HPCs.
 
 Install the required dependencies:
 ```bash

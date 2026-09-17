@@ -33,17 +33,17 @@ pip install -r requirements.txt
 To train a model from scratch using Distributed Data Parallel (DDP), execute the following command with your desired configuration file:
 
 ```bash
-python ddp_main.py --cfg ['config/lvis/lvis_v1_cbs.yaml']
+python ddp_main.py --cfg ['config/imagenet_lt/imagenet_lt_cbs_p.yaml']
 ```
 
 ### Evaluating Checkpoints
 
 All the results, including the checkpoints, can be downloaded from [this link](https://www.icloud.com/iclouddrive/0829G1RulTZsYWJoBRaGSf0eg#cbs%5Fpaper%5Fresults).
 
-To evaluate a specific checkpoint (for example, on `LVIS`), run:
+To evaluate a specific checkpoint (for example, on `ImageNet-LT`), run:
 
 ```bash
-python ddp_main.py --cfg config/lvis/lvis_v1_cbs.yaml --test_checkpoint 1 --checkpoint /path/to/checkpoint
+python ddp_main.py --cfg config/imagenet_lt/imagenet_lt_cbs_p.yaml --test_checkpoint 1 --checkpoint /path/to/checkpoint
 ```
 
 ---

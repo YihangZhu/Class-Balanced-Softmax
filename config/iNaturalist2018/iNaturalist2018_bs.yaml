@@ -1,0 +1,6 @@
+classifier:
+  name: 'Class_Balanced_Softmax'
+  args:
+    power_law: 1.0
+
+

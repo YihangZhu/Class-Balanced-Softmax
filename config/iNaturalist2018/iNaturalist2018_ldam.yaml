@@ -1,0 +1,12 @@
+
+classifier:
+  args:
+    cosine_similarity: True
+
+loss:
+  name: 'LDAMLoss'
+  args:
+    max_m: 0.3
+    s: 30
+    drw: True
+    reweight_epoch: 160

@@ -1,0 +1,16 @@
+trainer:
+  checkpoint: 'saved/path-to-res-results/2023-07-19_13-54-49_res50_iNaturalist2018_0_gpus4/ckps/last_ckp.tar'
+  mode: 'validate'  # training or validation
+
+representation:
+  name: 'resnet50'
+
+classifier:
+  name: 'Post_Adjust'
+  args:
+    post_adjust: 'tau_norm'
+    tau_norm: 0.3
+
+
+
+

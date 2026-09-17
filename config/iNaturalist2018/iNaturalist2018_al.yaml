@@ -1,0 +1,12 @@
+trainer:
+  checkpoint: 'saved/path-to-res-results/2023-07-19_13-54-49_res50_iNaturalist2018_0_gpus4/ckps/last_ckp.tar'
+  mode: 'validate'  # training or validation
+
+classifier:
+  name: 'Post_Adjust'
+  args:
+    post_adjust: 'post_hoc_adjust_logit'
+
+
+
+

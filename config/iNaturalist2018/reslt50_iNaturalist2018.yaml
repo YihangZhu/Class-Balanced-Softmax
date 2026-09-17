@@ -1,0 +1,20 @@
+representation:
+  name: 'reslt50'
+  args:
+    after_1x1conv: True
+
+classifier:
+  args:
+    tau_norm: 0.3
+    linear_bias: True
+
+loss:
+  name: 'ResltLoss'
+  args:
+    beta: 0.85
+
+
+
+
+
+
